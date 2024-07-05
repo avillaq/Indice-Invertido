@@ -85,14 +85,15 @@ vector<string> tokenizarTexto(string& texto) {
 }
 
 // Función para eliminar palabras vacías
-vector<string> remove_stop_words(const vector<string>& words, const unordered_set<string>& stop_words) {
-    vector<string> filtered_words;
-    for (const string& word : words) {
-        if (stop_words.find(word) == stop_words.end()) {
-            filtered_words.push_back(word);
+vector<string> eliminarStopWords(vector<string>& listaPalabras, unordered_set<string>& stopWords) {
+    vector<string> palabrasFiltradas;
+    for (string& palabra : listaPalabras) {
+        // Se verifica si la palabra no está en el conjunto de palabras vacías
+        if (stopWords.find(palabra) == stopWords.end()) {
+            palabrasFiltradas.push_back(palabra);
         }
     }
-    return filtered_words;
+    return palabrasFiltradas;
 }
 
 // Fase Map: Asignación de pares clave-valor
@@ -137,7 +138,7 @@ unordered_set<string> search_inverted_index(const string& word, const unordered_
 }
 
 int main() {
-    unordered_set<string> stop_words = {"el", "la", "y", "de", "a", "en", "un", "por", "con", "no", "una", "su", "para", "es", "al", "lo", "como", "más", "pero", "sus", "le", "ya", "o", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "uno", "les", "ni", "contra", "otros", "ese", "eso", "ante", "ellos", "e", "esto", "mí", "antes",  "qué", "unos", "yo", "otro", "otras", "otra", "él", "tanto", "esa", "estos", "mucho", "cual", "poco", "ella", "estar", "estas", "mi", "mis", "tú", "te", "ti", "tu", "tus", "ellas"};  
+    unordered_set<string> stopWords = {"el", "la", "y", "de", "a", "en", "un", "por", "con", "no", "una", "su", "para", "es", "al", "lo", "como", "más", "pero", "sus", "le", "ya", "o", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "uno", "les", "ni", "contra", "otros", "ese", "eso", "ante", "ellos", "e", "esto", "mí", "antes",  "qué", "unos", "yo", "otro", "otras", "otra", "él", "tanto", "esa", "estos", "mucho", "cual", "poco", "ella", "estar", "estas", "mi", "mis", "tú", "te", "ti", "tu", "tus", "ellas"};  
 
     // Nombre de los documentos a procesar
     vector<string> nombresArchivos = {"El senor doctor.txt", "La caja misteriosa.txt", "La mansion del misterio.txt", "La noche eterna.txt"};
@@ -157,8 +158,8 @@ int main() {
     
     for (auto& [nombre, texto] : archivosRecolectados) {
         vector<string> listaPalabras = tokenizarTexto(texto);
-        auto filtered_words = remove_stop_words(listaPalabras, stop_words);
-        archivosProcesados[nombre] = filtered_words;
+        vector<string> palabrasFiltradas = eliminarStopWords(listaPalabras, stopWords);
+        archivosProcesados[nombre] = palabrasFiltradas;
     }
 
     auto map_output = map_phase(archivosProcesados);
