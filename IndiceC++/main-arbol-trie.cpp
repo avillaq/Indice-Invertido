@@ -25,7 +25,7 @@ public:
     }
 
     // Insertar una palabra y el nombre de su archivo en el Trie
-    void insertar(string& palabra, string& nombreArchivo) {
+    void insertar(const string& palabra, const string& nombreArchivo) {
         Node* node = root;
         for (char letra : palabra) {
             if (!node->children.count(letra)) {
@@ -33,7 +33,7 @@ public:
             }
             node = node->children[letra];
         }
-        node->nombresArchivos.insertar(nombreArchivo);
+        node->nombresArchivos.insert(nombreArchivo);
     }
 
     // Buscar los archivos que contienen la palabra
@@ -128,7 +128,7 @@ Trie reducirDatos(unordered_map<string, vector<string>>& datosAgrupados) {
     Trie trie;
     for (auto& [palabra, nombreArchivo] : datosAgrupados) {
         for (auto& nom : nombreArchivo) {
-            trie.insert(palabra, nom);
+            trie.insertar(palabra, nom);
         }
     }
     return trie;
@@ -170,7 +170,7 @@ int main() {
             }
             else {
                 cout << "La palabra '" << nombreArchivo << "' esta en los documentos:" << endl;
-                for (string& nombres : archivosEncontrados) {
+                for (const string& nombres : archivosEncontrados) {
                     cout << "- " << nombres << endl;
                 }
             }
