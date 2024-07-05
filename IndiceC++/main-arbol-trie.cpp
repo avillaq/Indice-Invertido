@@ -69,15 +69,19 @@ unordered_map<string, string> recolectarArchivos(vector<string> &nombresArchivos
     return archivosRecolectados;
 }
 
-// Función para tokenizar texto
-vector<string> tokenize(const string& text) {
-    vector<string> words;
-    istringstream stream(text);
-    string word;
-    while (stream >> word) {
-        words.push_back(word);
+// Función para tokenizar un texto
+vector<string> tokenizarTexto(string& texto) {
+    vector<string> listaPalabras;
+    
+    // istringstream sirve para tratar un string como si fuera un stream de entrada
+    istringstream stream(texto);
+    string palabra;
+
+    // Se extraen palabra por palabra del stream y se almacenan en la lista
+    while (stream >> palabra) {
+        listaPalabras.push_back(palabra);
     }
-    return words;
+    return listaPalabras;
 }
 
 // Función para eliminar palabras vacías
@@ -152,8 +156,8 @@ int main() {
     unordered_map<string, vector<string>> archivosProcesados;
     
     for (auto& [nombre, texto] : archivosRecolectados) {
-        auto words = tokenize(texto);
-        auto filtered_words = remove_stop_words(words, stop_words);
+        vector<string> listaPalabras = tokenizarTexto(texto);
+        auto filtered_words = remove_stop_words(listaPalabras, stop_words);
         archivosProcesados[nombre] = filtered_words;
     }
 
