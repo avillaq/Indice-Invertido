@@ -116,13 +116,13 @@ vector<PalabraArchivo> mapearArchivos(unordered_map<string, vector<string>>& arc
     return datosMappeados;
 }
 
-// Organización de los datos intermedios: Agrupación por clave (palabra)
-unordered_map<string, vector<string>> shuffle_and_sort(const vector<pair<string, string>>& map_output) {
-    unordered_map<string, vector<string>> grouped_data;
-    for (const auto& [word, doc_id] : map_output) {
-        grouped_data[word].push_back(doc_id);
+// Organización de los datos intermedios: Agrupación por clave (palabra, palabra, ...)
+unordered_map<string, vector<string>> shuffle(vector<PalabraArchivo>& datosMapeados) {
+    unordered_map<string, vector<string>> datosAgrupados;
+    for (auto& dato : datosMapeados) {
+        datosAgrupados[dato.palabra].push_back(dato.nombreArchivo);
     }
-    return grouped_data;
+    return datosAgrupados;
 }
 
 // Fase Reduce: Combinar listas de identificadores de documentos para cada palabra usando Trie
@@ -172,8 +172,8 @@ int main() {
     }
 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
-    auto grouped_data = shuffle_and_sort(datosMapeados);
-    auto trie = reduce_phase_trie(grouped_data);
+    unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
+    auto trie = reduce_phase_trie(datosAgrupados);
 
 
     // Solicitar al usuario que ingrese una palabra para buscar en el índice
