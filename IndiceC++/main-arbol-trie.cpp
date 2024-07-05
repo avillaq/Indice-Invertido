@@ -53,49 +53,20 @@ public:
 
 };
 
-// Función para recolectar documentos de un directorio
-unordered_map<string, string> collect_documents(const string& directory) {
-    unordered_map<string, string> documents;
-    struct dirent *entry;
-    DIR *dp = opendir(directory.c_str());
-
-    if (dp == nullptr) {
-        perror("opendir");
-        return documents;
-    }
-
-    while ((entry = readdir(dp))) {
-        string filename = entry->d_name;
-        if (filename.size() > 4 && filename.substr(filename.size() - 4) == ".txt") {
-            ifstream file(directory + "/" + filename);
-            if (file) {
-                stringstream buffer;
-                buffer << file.rdbuf();
-                documents[filename] = buffer.str();
-            }
+// Función para recolectar los archivos de texto
+unordered_map<string, string> recolectarArchivos(vector<string> &nombresArchivos) {
+    unordered_map<string, string> archivosRecolectados;
+    for (string& nombre : nombresArchivos) {
+        ifstream archivoEntrada(nombre);
+        if (archivoEntrada) {
+            stringstream texto;
+            texto << archivoEntrada.rdbuf();
+            archivosRecolectados[nombre] = texto.str();
+        } else {
+            cerr << "Error al abrir el archivo: " << nombre << endl;
         }
     }
-
-    closedir(dp);
-    return documents;
-}
-
-// Función para convertir texto a minúsculas
-string to_lower(const string& text) {
-    string lower_text = text;
-    transform(lower_text.begin(), lower_text.end(), lower_text.begin(), ::tolower);
-    return lower_text;
-}
-
-// Función para eliminar signos de puntuación y caracteres no alfanuméricos
-string preprocess_text(const string& text) {
-    string processed_text;
-    for (char ch : text) {
-        if (isalnum(ch) || isspace(ch)) {
-            processed_text += ch;
-        }
-    }
-    return processed_text;
+    return archivosRecolectados;
 }
 
 // Función para tokenizar texto
@@ -162,21 +133,31 @@ unordered_set<string> search_inverted_index(const string& word, const unordered_
 }
 
 int main() {
-    string directory = "D:/Proyecto vscode/OTROS/MapReduce-Python/IndiceInvertido"; 
-    unordered_set<string> stop_words = {"el", "la", "y", "de", "a", "en", "un", "por", "con", "no", "una", "su", "para", "es", "al", "lo", "como", "más", "pero", "sus", "le", "ya", "o", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "también", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "durante", "todos", "uno", "les", "ni", "contra", "otros", "ese", "eso", "ante", "ellos", "e", "esto", "mí", "antes", "algunos", "qué", "unos", "yo", "otro", "otras", "otra", "él", "tanto", "esa", "estos", "mucho", "quienes", "nada", "muchos", "cual", "poco", "ella", "estar", "estas", "algunas", "algo", "nosotros", "mi", "mis", "tú", "te", "ti", "tu", "tus", "ellas", "nosotras", "vosotros", "vosotras", "os", "mío", "mía", "míos", "mías", "tuyo", "tuya", "tuyos", "tuyas", "suyo", "suya", "suyos", "suyas", "nuestro", "nuestra", "nuestros", "nuestras", "vuestro", "vuestra", "vuestros", "vuestras", "esos", "esas", "estoy", "estás", "está", "estamos", "estáis", "están", "esté", "estés", "estemos", "estéis", "estén", "estaré", "estarás", "estará", "estaremos", "estaréis", "estarán", "estaría", "estarías", "estaríamos", "estaríais", "estarían", "estaba", "estabas", "estábamos", "estabais", "estaban", "estuve", "estuviste", "estuvo", "estuvimos", "estuvisteis", "estuvieron", "estuviera", "estuvieras", "estuviéramos", "estuvierais", "estuvieran", "estuviese", "estuvieses", "estuviésemos", "estuvieseis", "estuviesen", "estando", "estado", "estada", "estados", "estadas", "estad"};  
-   
+    unordered_set<string> stop_words = {"el", "la", "y", "de", "a", "en", "un", "por", "con", "no", "una", "su", "para", "es", "al", "lo", "como", "más", "pero", "sus", "le", "ya", "o", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "uno", "les", "ni", "contra", "otros", "ese", "eso", "ante", "ellos", "e", "esto", "mí", "antes",  "qué", "unos", "yo", "otro", "otras", "otra", "él", "tanto", "esa", "estos", "mucho", "cual", "poco", "ella", "estar", "estas", "mi", "mis", "tú", "te", "ti", "tu", "tus", "ellas"};  
 
-    auto documents = collect_documents(directory);
+    // Nombre de los documentos a procesar
+    vector<string> nombresArchivos = {"El senor doctor.txt", "La caja misteriosa.txt", "La mansion del misterio.txt", "La noche eterna.txt"};
 
-    unordered_map<string, vector<string>> processed_documents;
-    for (const auto& [doc_id, text] : documents) {
-        string processed_text = preprocess_text(to_lower(text));
-        auto words = tokenize(processed_text);
-        auto filtered_words = remove_stop_words(words, stop_words);
-        processed_documents[doc_id] = filtered_words;
+    unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);
+
+    // Mostrar los documentos recolectados (Prueba)
+    cout << "Documentos recolectados:" << endl;
+    for (const auto& [doc_id, text] : archivosRecolectados) {
+        cout << "- " << doc_id << endl;
+        cout << text << endl;
     }
 
-    auto map_output = map_phase(processed_documents);
+    return 0;
+
+    unordered_map<string, vector<string>> archivosProcesados;
+    
+    for (auto& [nombre, texto] : archivosRecolectados) {
+        auto words = tokenize(texto);
+        auto filtered_words = remove_stop_words(words, stop_words);
+        archivosProcesados[nombre] = filtered_words;
+    }
+
+    auto map_output = map_phase(archivosProcesados);
     auto grouped_data = shuffle_and_sort(map_output);
     auto trie = reduce_phase_trie(grouped_data);
 
