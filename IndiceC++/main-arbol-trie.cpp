@@ -5,14 +5,12 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include <algorithm>
-#include <dirent.h>
 using namespace std;
 
 // Nodo del Trie
 struct Node {
     unordered_map<char, Node*> children;
-    unordered_set<string> doc_ids;  // Identificadores de documentos donde aparece la palabra
+    unordered_set<string> nombresArchivos; 
 };
 
 // Clase Trie
@@ -26,8 +24,8 @@ public:
         root = new Node();
     }
 
-    // Insertar una palabra y su doc_id en el Trie
-    void insert(const string& palabra, const string& doc_id) {
+    // Insertar una palabra y el nombre de su archivo en el Trie
+    void insertar(string& palabra, string& nombreArchivo) {
         Node* node = root;
         for (char letra : palabra) {
             if (!node->children.count(letra)) {
@@ -35,11 +33,11 @@ public:
             }
             node = node->children[letra];
         }
-        node->doc_ids.insert(doc_id);
+        node->nombresArchivos.insertar(nombreArchivo);
     }
 
-    // Buscar documentos que contienen la palabra
-    unordered_set<string> search(const string& palabra) {
+    // Buscar los archivos que contienen la palabra
+    unordered_set<string> buscar(string& palabra) {
         Node* node = root;
         for (char letra : palabra) {
             if (!node->children.count(letra)) {
@@ -47,7 +45,7 @@ public:
             }
             node = node->children[letra];
         }
-        return node->doc_ids;
+        return node->nombresArchivos;
     }
 
 
@@ -125,25 +123,15 @@ unordered_map<string, vector<string>> shuffle(vector<PalabraArchivo>& datosMapea
     return datosAgrupados;
 }
 
-// Fase Reduce: Combinar listas de identificadores de documentos para cada palabra usando Trie
-Trie reduce_phase_trie(const unordered_map<string, vector<string>>& grouped_data) {
+// Fase Reduce: Combinar listas de nombre de los archivos para cada palabra usando un Trie
+Trie reducirDatos(unordered_map<string, vector<string>>& datosAgrupados) {
     Trie trie;
-    for (const auto& [word, doc_ids] : grouped_data) {
-        for (const auto& doc_id : doc_ids) {
-            trie.insert(word, doc_id);
+    for (auto& [palabra, nombreArchivo] : datosAgrupados) {
+        for (auto& nom : nombreArchivo) {
+            trie.insert(palabra, nom);
         }
     }
     return trie;
-}
-
-
-// Función para buscar palabras en el índice invertido
-unordered_set<string> search_inverted_index(const string& word, const unordered_map<string, unordered_set<string>>& inverted_index) {
-    auto it = inverted_index.find(word);
-    if (it != inverted_index.end()) {
-        return it->second;
-    }
-    return {};
 }
 
 int main() {
@@ -154,17 +142,7 @@ int main() {
 
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);
 
-    // Mostrar los documentos recolectados (Prueba)
-    cout << "Documentos recolectados:" << endl;
-    for (const auto& [doc_id, text] : archivosRecolectados) {
-        cout << "- " << doc_id << endl;
-        cout << text << endl;
-    }
-
-    return 0;
-
     unordered_map<string, vector<string>> archivosProcesados;
-    
     for (auto& [nombre, texto] : archivosRecolectados) {
         vector<string> listaPalabras = tokenizarTexto(texto);
         vector<string> palabrasFiltradas = eliminarStopWords(listaPalabras, stopWords);
@@ -173,7 +151,7 @@ int main() {
 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
     unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
-    auto trie = reduce_phase_trie(datosAgrupados);
+    Trie trie = reducirDatos(datosAgrupados);
 
 
     // Solicitar al usuario que ingrese una palabra para buscar en el índice
@@ -186,7 +164,7 @@ int main() {
             salir = true;
         }
         else {
-            unordered_set<string> archivosEncontrados = trie.search(nombreArchivo);
+            unordered_set<string> archivosEncontrados = trie.buscar(nombreArchivo);
             if (archivosEncontrados.empty()) {
                 cout << "La palabra '" << nombreArchivo << "' no esta en el índice invertido." << endl;
             }
