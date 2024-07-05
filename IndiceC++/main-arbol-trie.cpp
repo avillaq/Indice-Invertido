@@ -96,15 +96,24 @@ vector<string> eliminarStopWords(vector<string>& listaPalabras, unordered_set<st
     return palabrasFiltradas;
 }
 
-// Fase Map: Asignación de pares clave-valor
-vector<pair<string, string>> map_phase(const unordered_map<string, vector<string>>& processed_documents) {
-    vector<pair<string, string>> map_output;
-    for (const auto& [doc_id, words] : processed_documents) {
-        for (const string& word : words) {
-            map_output.emplace_back(word, doc_id);
+// Estructura para almacenar la palabra y el nombre del archivo
+struct PalabraArchivo {
+    string palabra;
+    string nombreArchivo;
+};
+
+// Función para mapear los archivos procesados
+vector<PalabraArchivo> mapearArchivos(unordered_map<string, vector<string>>& archivosProcesados) {
+    PalabraArchivo pa;
+    vector<PalabraArchivo> datosMappeados;
+    for (auto& [nombre, listaPalabras] : archivosProcesados) {
+        for (string& palabra : listaPalabras) {
+            pa.palabra = palabra;
+            pa.nombreArchivo = nombre;
+            datosMappeados.push_back(pa);
         }
     }
-    return map_output;
+    return datosMappeados;
 }
 
 // Organización de los datos intermedios: Agrupación por clave (palabra)
@@ -162,35 +171,29 @@ int main() {
         archivosProcesados[nombre] = palabrasFiltradas;
     }
 
-    auto map_output = map_phase(archivosProcesados);
-    auto grouped_data = shuffle_and_sort(map_output);
+    vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
+    auto grouped_data = shuffle_and_sort(datosMapeados);
     auto trie = reduce_phase_trie(grouped_data);
 
-    // Solicitar al usuario que ingrese una palabra para buscar en el índice
-    string word_to_search;
-    bool salir = false;
 
-    do
-    {
+    // Solicitar al usuario que ingrese una palabra para buscar en el índice
+    string nombreArchivo;
+    bool salir = false;
+    do {
         cout << "Ingrese una palabra para buscar en el índice invertido (o '0' para terminar): ";
-        cin >> word_to_search;
-        if (word_to_search == "0")
-        {
+        cin >> nombreArchivo;
+        if (nombreArchivo == "0") {
             salir = true;
         }
-        else
-        {
-            auto doc_ids = trie.search(word_to_search);
-            if (doc_ids.empty())
-            {
-                cout << "La palabra '" << word_to_search << "' no se encontró en el índice invertido." << endl;
+        else {
+            unordered_set<string> archivosEncontrados = trie.search(nombreArchivo);
+            if (archivosEncontrados.empty()) {
+                cout << "La palabra '" << nombreArchivo << "' no esta en el índice invertido." << endl;
             }
-            else
-            {
-                cout << "La palabra '" << word_to_search << "' se encontró en los siguientes documentos:" << endl;
-                for (const string& doc_id : doc_ids)
-                {
-                    cout << "- " << doc_id << endl;
+            else {
+                cout << "La palabra '" << nombreArchivo << "' esta en los documentos:" << endl;
+                for (string& nombres : archivosEncontrados) {
+                    cout << "- " << nombres << endl;
                 }
             }
         }
