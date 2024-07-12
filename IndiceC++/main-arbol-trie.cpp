@@ -67,12 +67,14 @@ unordered_map<string, string> recolectarArchivos(vector<string> &nombresArchivos
     return archivosRecolectados;
 }
 
-// Función para eliminar signos de puntuación
+// Función para eliminar signos de puntuación y saltos de linea
 string eliminarSignos(string& texto) {
     string nuevoTexto;
     for (char caracter : texto) {
         if (isalnum(caracter) || caracter == ' ') {
             nuevoTexto += caracter;
+        } else if (caracter == '\n') {
+            nuevoTexto += " ";
         }
     }
     return nuevoTexto;
