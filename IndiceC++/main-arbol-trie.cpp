@@ -160,7 +160,7 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
         unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
         unordered_set<string> archivosEncontrados2 = trie.buscar(palabra2);
         unordered_set<string> interseccionArchivos;
-        for (string& nombres : archivosEncontrados1) {
+        for (const string& nombres : archivosEncontrados1) {
             // Si el archivo está en ambos conjuntos, se agrega a la intersección
             // el metodo find devuelve un iterador al elemento si lo encuentra, si no, devuelve un iterador al final ( end() )
             if (archivosEncontrados2.find(nombres) != archivosEncontrados2.end()) {
@@ -181,7 +181,17 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
 }
 
 int main() {
-    unordered_set<string> stopWords = {"el", "la", "y", "de", "a", "en", "un", "por", "con", "no", "una", "su", "para", "es", "al", "lo", "como", "más", "pero", "sus", "le", "ya", "o", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "uno", "les", "ni", "contra", "otros", "ese", "eso", "ante", "ellos", "e", "esto", "mí", "antes",  "qué", "unos", "yo", "otro", "otras", "otra", "él", "tanto", "esa", "estos", "mucho", "cual", "poco", "ella", "estar", "estas", "mi", "mis", "tú", "te", "ti", "tu", "tus", "ellas"};  
+    // Cargamos las palabras vacias del archivo
+    ifstream archivoEntrada("stop_words_spanish.txt");
+    unordered_set<string> stopWords;
+    if (archivoEntrada) {
+        string palabra;
+        while (getline(archivoEntrada, palabra)) {
+            stopWords.insert(palabra);
+        }
+    } else {
+        cerr << "Error al abrir el archivo de palabras vacias." << endl;
+    } 
 
     // Nombre de los documentos a procesar
     vector<string> nombresArchivos = {"El senor doctor.txt", "La caja misteriosa.txt", "La mansion del misterio.txt", "La noche eterna.txt"};
