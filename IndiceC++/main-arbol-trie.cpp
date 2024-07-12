@@ -67,6 +67,17 @@ unordered_map<string, string> recolectarArchivos(vector<string> &nombresArchivos
     return archivosRecolectados;
 }
 
+// Función para eliminar signos de puntuación
+string eliminarSignos(string& texto) {
+    string nuevoTexto;
+    for (char caracter : texto) {
+        if (isalnum(caracter) || caracter == ' ') {
+            nuevoTexto += caracter;
+        }
+    }
+    return nuevoTexto;
+}
+
 // Función para tokenizar un texto
 vector<string> tokenizarTexto(string& texto) {
     vector<string> listaPalabras;
@@ -123,7 +134,7 @@ unordered_map<string, vector<string>> shuffle(vector<PalabraArchivo>& datosMapea
     return datosAgrupados;
 }
 
-// Fase Reduce: Combinar listas de nombre de los archivos para cada palabra usando un Trie
+// Reducir combinando listas de nombre de los archivos para cada palabra usando un Trie
 Trie reducirDatos(unordered_map<string, vector<string>>& datosAgrupados) {
     Trie trie;
     for (auto& [palabra, nombreArchivo] : datosAgrupados) {
@@ -144,6 +155,7 @@ int main() {
 
     unordered_map<string, vector<string>> archivosProcesados;
     for (auto& [nombre, texto] : archivosRecolectados) {
+        texto = eliminarSignos(texto);
         vector<string> listaPalabras = tokenizarTexto(texto);
         vector<string> palabrasFiltradas = eliminarStopWords(listaPalabras, stopWords);
         archivosProcesados[nombre] = palabrasFiltradas;
@@ -158,7 +170,7 @@ int main() {
     string nombreArchivo;
     bool salir = false;
     do {
-        cout << "Ingrese una palabra para buscar en el índice invertido (o '0' para terminar): ";
+        cout << "Ingrese una palabra para buscar en el indice invertido (o '0' para terminar): ";
         cin >> nombreArchivo;
         if (nombreArchivo == "0") {
             salir = true;
@@ -166,7 +178,7 @@ int main() {
         else {
             unordered_set<string> archivosEncontrados = trie.buscar(nombreArchivo);
             if (archivosEncontrados.empty()) {
-                cout << "La palabra '" << nombreArchivo << "' no esta en el índice invertido." << endl;
+                cout << "La palabra '" << nombreArchivo << "' no esta en el indice invertido." << endl;
             }
             else {
                 cout << "La palabra '" << nombreArchivo << "' esta en los documentos:" << endl;
