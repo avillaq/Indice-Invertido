@@ -147,6 +147,39 @@ Trie reducirDatos(unordered_map<string, vector<string>>& datosAgrupados) {
     return trie;
 }
 
+unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
+    istringstream stream(entrada);
+    string palabra1;
+    stream >> palabra1;
+    string operador;
+    stream >> operador;
+    string palabra2;
+    stream >> palabra2;
+
+    if (operador == "AND") {
+        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
+        unordered_set<string> archivosEncontrados2 = trie.buscar(palabra2);
+        unordered_set<string> interseccionArchivos;
+        for (string& nombres : archivosEncontrados1) {
+            // Si el archivo está en ambos conjuntos, se agrega a la intersección
+            // el metodo find devuelve un iterador al elemento si lo encuentra, si no, devuelve un iterador al final ( end() )
+            if (archivosEncontrados2.find(nombres) != archivosEncontrados2.end()) {
+                interseccionArchivos.insert(nombres);
+            }
+        }
+        return interseccionArchivos;
+    } else if (operador == "OR") {
+        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
+        unordered_set<string> archivosEncontrados2 = trie.buscar(palabra2);
+        archivosEncontrados1.merge(archivosEncontrados2);
+        return archivosEncontrados1;
+    } else {
+        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
+        return archivosEncontrados1;
+    }
+    
+}
+
 int main() {
     unordered_set<string> stopWords = {"el", "la", "y", "de", "a", "en", "un", "por", "con", "no", "una", "su", "para", "es", "al", "lo", "como", "más", "pero", "sus", "le", "ya", "o", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "uno", "les", "ni", "contra", "otros", "ese", "eso", "ante", "ellos", "e", "esto", "mí", "antes",  "qué", "unos", "yo", "otro", "otras", "otra", "él", "tanto", "esa", "estos", "mucho", "cual", "poco", "ella", "estar", "estas", "mi", "mis", "tú", "te", "ti", "tu", "tus", "ellas"};  
 
@@ -179,7 +212,7 @@ int main() {
             salir = true;
         }
         else {
-            unordered_set<string> archivosEncontrados = trie.buscar(palabraBuscar);
+            unordered_set<string> archivosEncontrados = procesarEntrada(trie,palabraBuscar);
             if (archivosEncontrados.empty()) {
                 cout << "La palabra '" << palabraBuscar << "' no esta en el indice invertido." << endl;
             }
