@@ -169,21 +169,22 @@ int main() {
 
 
     // Solicitar al usuario que ingrese una palabra para buscar en el índice
-    string nombreArchivo;
+    string palabraBuscar;
     bool salir = false;
     do {
         cout << "Ingrese una palabra para buscar en el indice invertido (o '0' para terminar): ";
-        cin >> nombreArchivo;
-        if (nombreArchivo == "0") {
+        getline(cin, palabraBuscar);
+        
+        if (palabraBuscar == "0") {
             salir = true;
         }
         else {
-            unordered_set<string> archivosEncontrados = trie.buscar(nombreArchivo);
+            unordered_set<string> archivosEncontrados = trie.buscar(palabraBuscar);
             if (archivosEncontrados.empty()) {
-                cout << "La palabra '" << nombreArchivo << "' no esta en el indice invertido." << endl;
+                cout << "La palabra '" << palabraBuscar << "' no esta en el indice invertido." << endl;
             }
             else {
-                cout << "La palabra '" << nombreArchivo << "' esta en los documentos:" << endl;
+                cout << "La palabra '" << palabraBuscar << "' esta en los documentos:" << endl;
                 for (const string& nombres : archivosEncontrados) {
                     cout << "- " << nombres << endl;
                 }
