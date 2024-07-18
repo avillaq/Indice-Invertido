@@ -138,14 +138,12 @@ unordered_map<string, vector<string>> shuffle(vector<PalabraArchivo>& datosMapea
 }
 
 // Reducir combinando listas de nombre de los archivos para cada palabra usando un Trie
-Trie reducirDatos(unordered_map<string, vector<string>>& datosAgrupados) {
-    Trie trie;
+void reducirDatos(unordered_map<string, vector<string>>& datosAgrupados, Trie& trie) {
     for (auto& [palabra, nombreArchivo] : datosAgrupados) {
         for (auto& nom : nombreArchivo) {
             trie.insertar(palabra, nom);
         }
     }
-    return trie;
 }
 
 unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
@@ -157,7 +155,7 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
     string palabra2;
     stream >> palabra2;
 
-    if (operador == "AND") {
+    if (operador == "AND" || operador == "and") {
         unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
         unordered_set<string> archivosEncontrados2 = trie.buscar(palabra2);
         unordered_set<string> interseccionArchivos;
@@ -169,7 +167,7 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
             }
         }
         return interseccionArchivos;
-    } else if (operador == "OR") {
+    } else if (operador == "OR" || operador == "or") {
         unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
         unordered_set<string> archivosEncontrados2 = trie.buscar(palabra2);
         archivosEncontrados1.merge(archivosEncontrados2);
@@ -212,7 +210,8 @@ int main() {
 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
     unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
-    Trie trie = reducirDatos(datosAgrupados);
+    Trie trie;
+    reducirDatos(datosAgrupados, trie);
 
     // Detenemos el cronómetro y mostramos el tiempo transcurrido
     auto stop = std::chrono::high_resolution_clock::now();
