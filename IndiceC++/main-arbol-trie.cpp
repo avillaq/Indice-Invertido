@@ -198,7 +198,7 @@ int main() {
     } 
 
     // Nombre de los documentos a procesar
-    vector<string> nombresArchivos = {"El senor doctor.txt", "La caja misteriosa.txt", "La mansion del misterio.txt", "La noche eterna.txt", "Bella flor.txt", "El principe feliz.txt", "El ruisenor.txt", "El sastrecillo valiente.txt", "El Zar Saltan.txt", "Hansel y Gretel.txt", "La abeja haragana.txt", "La tortuga gigante.txt", "Piel de asno.txt"};
+    vector<string> nombresArchivos = {"17 LEYES DEL TRABAJO EN EQUIPO - JOHN C. MAXWELL.txt", "21 LEYES DEL LIDERAZGO - JOHN C. MAXWELL.txt", "25 MANERAS DE GANARSE A LA GENTE - JOHN C. MAXWELL.txt", "ACTITUD DE VENCEDOR - JOHN C. MAXWELL.txt", "El Oro Y La Ceniza - Abecassis Eliette.txt", "La ultima sirena - Abe ShanaLa.txt", "SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt", "VIVE TU SUENO - JOHN MAXWELL.txt"};
 
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);
 
