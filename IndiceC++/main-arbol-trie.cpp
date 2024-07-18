@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <thread>
 using namespace std;
 
 // Nodo del Trie
@@ -181,6 +182,9 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
 }
 
 int main() {
+    // Iniciamos el cronómetro
+    auto start = std::chrono::high_resolution_clock::now();
+
     // Cargamos las palabras vacias del archivo
     ifstream archivoEntrada("stop_words_spanish.txt");
     unordered_set<string> stopWords;
@@ -194,7 +198,7 @@ int main() {
     } 
 
     // Nombre de los documentos a procesar
-    vector<string> nombresArchivos = {"El senor doctor.txt", "La caja misteriosa.txt", "La mansion del misterio.txt", "La noche eterna.txt"};
+    vector<string> nombresArchivos = {"El senor doctor.txt", "La caja misteriosa.txt", "La mansion del misterio.txt", "La noche eterna.txt", "Bella flor.txt", "El principe feliz.txt", "El ruisenor.txt", "El sastrecillo valiente.txt", "El Zar Saltan.txt", "Hansel y Gretel.txt", "La abeja haragana.txt", "La tortuga gigante.txt", "Piel de asno.txt"};
 
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);
 
@@ -210,6 +214,9 @@ int main() {
     unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
     Trie trie = reducirDatos(datosAgrupados);
 
+    // Detenemos el cronómetro y mostramos el tiempo transcurrido
+    auto stop = std::chrono::high_resolution_clock::now();
+    cout << "tiempo= " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() << " ms" << endl;
 
     // Solicitar al usuario que ingrese una palabra para buscar en el índice
     string palabraBuscar;
