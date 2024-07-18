@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <thread>
+#include <mutex>
 using namespace std;
 
 // Nodo del Trie
@@ -178,11 +179,8 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
     }
     
 }
-
-int main() {
-    // Iniciamos el cronómetro
-    auto start = std::chrono::high_resolution_clock::now();
-
+void crearIndiceInvertido(vector<string> nombresArchivos, Trie trie) {
+    mutex mx ;
     // Cargamos las palabras vacias del archivo
     ifstream archivoEntrada("stop_words_spanish.txt");
     unordered_set<string> stopWords;
@@ -194,10 +192,6 @@ int main() {
     } else {
         cerr << "Error al abrir el archivo de palabras vacias." << endl;
     } 
-
-    // Nombre de los documentos a procesar
-    vector<string> nombresArchivos = {"17 LEYES DEL TRABAJO EN EQUIPO - JOHN C. MAXWELL.txt", "21 LEYES DEL LIDERAZGO - JOHN C. MAXWELL.txt", "25 MANERAS DE GANARSE A LA GENTE - JOHN C. MAXWELL.txt", "ACTITUD DE VENCEDOR - JOHN C. MAXWELL.txt", "El Oro Y La Ceniza - Abecassis Eliette.txt", "La ultima sirena - Abe ShanaLa.txt", "SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt", "VIVE TU SUENO - JOHN MAXWELL.txt"};
-
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);
 
     unordered_map<string, vector<string>> archivosProcesados;
@@ -210,12 +204,51 @@ int main() {
 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
     unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
-    Trie trie;
+    
+    lock_guard<mutex> lock(mx);
     reducirDatos(datosAgrupados, trie);
+
+}
+
+int main() {
+    // Iniciamos el cronómetro
+    auto start = std::chrono::high_resolution_clock::now();
+
+    
+
+    // Nombre de los documentos a procesar
+    vector<vector<string>> nombresArchivos = {
+        {"17 LEYES DEL TRABAJO EN EQUIPO - JOHN C. MAXWELL.txt"},
+        {"21 LEYES DEL LIDERAZGO - JOHN C. MAXWELL.txt"},
+        {"25 MANERAS DE GANARSE A LA GENTE - JOHN C. MAXWELL.txt"},
+        {"ACTITUD DE VENCEDOR - JOHN C. MAXWELL.txt"},
+        {"El Oro Y La Ceniza - Abecassis Eliette.txt"},
+        {"La ultima sirena - Abe ShanaLa.txt"},
+        {"SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt"},
+        {"VIVE TU SUENO - JOHN MAXWELL.txt"}
+    };
+
+    Trie trie;
+    thread threads[8];
+    for (int i = 0; i < 8; ++i) {
+        threads[i] = thread(crearIndiceInvertido, nombresArchivos[i] , trie);
+    }
+    // Esperamos a que todos los hilos terminen
+    for (int i = 0; i < 8; ++i) {
+        if (threads[i].joinable()){
+            threads[i].join();
+        } else {
+            cerr << "Error al unir el hilo " << i << endl;
+        }
+    }
+
+    
 
     // Detenemos el cronómetro y mostramos el tiempo transcurrido
     auto stop = std::chrono::high_resolution_clock::now();
     cout << "tiempo= " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() << " ms" << endl;
+
+
 
     // Solicitar al usuario que ingrese una palabra para buscar en el índice
     string palabraBuscar;
