@@ -10,7 +10,7 @@
 using namespace std;
 
 mutex mx;
-unordered_map<string, vector<string>> datosTotalesAgrupados;
+vector<unordered_map<string, vector<string>>> datosTotalesAgrupados;
 // Nodo del Trie
 struct Node {
     unordered_map<char, Node*> children;
@@ -181,6 +181,7 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
     }
     
 }
+// Esta funcion se ejecutara en paralelo
 void crearIndiceInvertido(vector<string> nombresArchivos, Trie& trie, unordered_set<string>& stopWords) {
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);
 
@@ -194,15 +195,16 @@ void crearIndiceInvertido(vector<string> nombresArchivos, Trie& trie, unordered_
 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
     unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
-    
-    lock_guard<mutex> lock(mx);
-    datosTotalesAgrupados.merge(datosAgrupados);
 
+    // Bloquear el acceso a la variable compartida
+    lock_guard<mutex> lock(mx);
+    datosTotalesAgrupados.push_back(datosAgrupados);
+    
 }
 
 int main() {
     // Iniciamos el cronómetro
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
 
     // Cargamos las palabras vacias del archivo
     ifstream archivoEntrada("stop_words_spanish.txt");
@@ -244,15 +246,18 @@ int main() {
             cerr << "Error al unir el hilo " << i << endl;
         }
     }
-    
-    reducirDatos(datosTotalesAgrupados, trie);
-    
+    auto start1 = chrono::high_resolution_clock::now();
+
+    for (auto& datos : datosTotalesAgrupados) {
+        reducirDatos(datos, trie);        
+    }
+    // Detenemos el cronómetro y mostramos el tiempo transcurrido
+    auto stop1 = chrono::high_resolution_clock::now();
+    cout << "tiempo insercion = " << chrono::duration_cast<chrono::milliseconds>(stop1 - start1).count() << " ms" << endl;
 
     // Detenemos el cronómetro y mostramos el tiempo transcurrido
-    auto stop = std::chrono::high_resolution_clock::now();
-    cout << "tiempo= " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() << " ms" << endl;
-
-
+    auto stop = chrono::high_resolution_clock::now();
+    cout << "tiempo total = " << chrono::duration_cast<chrono::milliseconds>(stop - start).count() << " ms" << endl;
 
     // Solicitar al usuario que ingrese una palabra para buscar en el índice
     string palabraBuscar;
