@@ -9,6 +9,7 @@
 #include <mutex>
 using namespace std;
 
+mutex mx;
 // Nodo del Trie
 struct Node {
     unordered_map<char, Node*> children;
@@ -140,6 +141,7 @@ unordered_map<string, vector<string>> shuffle(vector<PalabraArchivo>& datosMapea
 
 // Reducir combinando listas de nombre de los archivos para cada palabra usando un Trie
 void reducirDatos(unordered_map<string, vector<string>>& datosAgrupados, Trie& trie) {
+    lock_guard<mutex> lock(mx);
     for (auto& [palabra, nombreArchivo] : datosAgrupados) {
         for (auto& nom : nombreArchivo) {
             trie.insertar(palabra, nom);
@@ -179,19 +181,7 @@ unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){
     }
     
 }
-void crearIndiceInvertido(vector<string> nombresArchivos, Trie trie) {
-    mutex mx ;
-    // Cargamos las palabras vacias del archivo
-    ifstream archivoEntrada("stop_words_spanish.txt");
-    unordered_set<string> stopWords;
-    if (archivoEntrada) {
-        string palabra;
-        while (getline(archivoEntrada, palabra)) {
-            stopWords.insert(palabra);
-        }
-    } else {
-        cerr << "Error al abrir el archivo de palabras vacias." << endl;
-    } 
+void crearIndiceInvertido(vector<string> nombresArchivos, Trie& trie, unordered_set<string>& stopWords) {
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);
 
     unordered_map<string, vector<string>> archivosProcesados;
@@ -204,8 +194,7 @@ void crearIndiceInvertido(vector<string> nombresArchivos, Trie trie) {
 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
     unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
-    
-    lock_guard<mutex> lock(mx);
+    cout << "Elementos: " << datosAgrupados.size() << endl;
     reducirDatos(datosAgrupados, trie);
 
 }
@@ -214,6 +203,18 @@ int main() {
     // Iniciamos el cronómetro
     auto start = std::chrono::high_resolution_clock::now();
 
+    // Cargamos las palabras vacias del archivo
+    ifstream archivoEntrada("stop_words_spanish.txt");
+    unordered_set<string> stopWords;
+    if (archivoEntrada) {
+        string palabra;
+        while (getline(archivoEntrada, palabra)) {
+            stopWords.insert(palabra);
+        }
+    } else {
+        cerr << "Error al abrir el archivo de palabras vacias." << endl;
+        return 1;
+    }
     
 
     // Nombre de los documentos a procesar
@@ -231,7 +232,7 @@ int main() {
     Trie trie;
     thread threads[8];
     for (int i = 0; i < 8; ++i) {
-        threads[i] = thread(crearIndiceInvertido, nombresArchivos[i] , trie);
+        threads[i] = thread(crearIndiceInvertido, nombresArchivos[i] , ref(trie), ref(stopWords));
     }
     // Esperamos a que todos los hilos terminen
     for (int i = 0; i < 8; ++i) {
