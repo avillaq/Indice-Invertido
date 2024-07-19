@@ -10,6 +10,7 @@
 using namespace std;
 
 mutex mx;
+unordered_map<string, vector<string>> datosTotalesAgrupados;
 // Nodo del Trie
 struct Node {
     unordered_map<char, Node*> children;
@@ -141,7 +142,6 @@ unordered_map<string, vector<string>> shuffle(vector<PalabraArchivo>& datosMapea
 
 // Reducir combinando listas de nombre de los archivos para cada palabra usando un Trie
 void reducirDatos(unordered_map<string, vector<string>>& datosAgrupados, Trie& trie) {
-    lock_guard<mutex> lock(mx);
     for (auto& [palabra, nombreArchivo] : datosAgrupados) {
         for (auto& nom : nombreArchivo) {
             trie.insertar(palabra, nom);
@@ -194,8 +194,9 @@ void crearIndiceInvertido(vector<string> nombresArchivos, Trie& trie, unordered_
 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
     unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);
-    cout << "Elementos: " << datosAgrupados.size() << endl;
-    reducirDatos(datosAgrupados, trie);
+    
+    lock_guard<mutex> lock(mx);
+    datosTotalesAgrupados.merge(datosAgrupados);
 
 }
 
@@ -230,19 +231,21 @@ int main() {
     };
 
     Trie trie;
-    thread threads[8];
-    for (int i = 0; i < 8; ++i) {
+    int numeroThreads = 8;
+    thread threads[numeroThreads];
+    for (int i = 0; i < numeroThreads; ++i) {
         threads[i] = thread(crearIndiceInvertido, nombresArchivos[i] , ref(trie), ref(stopWords));
     }
     // Esperamos a que todos los hilos terminen
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < numeroThreads; ++i) {
         if (threads[i].joinable()){
             threads[i].join();
         } else {
             cerr << "Error al unir el hilo " << i << endl;
         }
     }
-
+    
+    reducirDatos(datosTotalesAgrupados, trie);
     
 
     // Detenemos el cronómetro y mostramos el tiempo transcurrido
