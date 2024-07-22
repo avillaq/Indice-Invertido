@@ -7,200 +7,184 @@
 #include <unordered_set>
 #include <thread>
 #include <mutex>
+#include <chrono>
 using namespace std;
 
 // Nodo del Trie
 struct Node {
-    unordered_map<char, Node*> children; // hijo, contiene un caracter y una referencia a un hijo
-    unordered_set<string> nombresArchivos;  // archivos que contienen la palabra hasta ese punto
+    unordered_map<char, Node*> children;
+    unordered_set<string> nombresArchivos;
 };
 
 // Clase Trie
 class Trie {
-
 private:
-    Node* root; // nodo inicial
+    Node* root;
 
 public:
     Trie() {
-        root = new Node(); // constructor, crea nodo inicial
+        root = new Node();
     }
 
-    // Insertar una palabra y el nombre de su archivo en el Trie
-    void insertar(const string& palabra, const string& nombreArchivo) { 
-        Node* node = root; // nodo inicial
-        for (char letra : palabra) { // para cada letra en nuestra palabra
-            if (!node->children.count(letra)) { // si existe aun un hijo con esa letra
-                node->children[letra] = new Node(); // creamos un nuevo nodo hijo con dicha letra
+    void insertar(const string& palabra, const string& nombreArchivo) {
+        Node* node = root;
+        for (char letra : palabra) {
+            if (!node->children.count(letra)) {
+                node->children[letra] = new Node();
             }
-            node = node->children[letra]; // nos movemos al nodo hijo que contiene la letra
+            node = node->children[letra];
         }
-        node->nombresArchivos.insert(nombreArchivo); // insertamos el nombre del archivo (final de palabra)
+        node->nombresArchivos.insert(nombreArchivo);
     }
 
-    // Buscar los archivos que contienen la palabra
-    unordered_set<string> buscar(string& palabra) {
-        Node* node = root; // nodo inicial
-        for (char letra : palabra) { // para cada letra en nuestra palabra
-            if (!node->children.count(letra)) { // si no existe un hijo con esa letra
-                return {}; // no existe, devolvemos un conjunto vacío
+    unordered_set<string> buscar(const string& palabra) const {
+        Node* node = root;
+        for (char letra : palabra) {
+            if (!node->children.count(letra)) {
+                return {};
             }
-            node = node->children[letra]; // nos movemos al nodo hijo que contiene la letra
+            node = node->children[letra];
         }
-        return node->nombresArchivos; // retorna los archivos a los que pertenece el ultimo nodo (final de palabra)
+        return node->nombresArchivos;
     }
-
 
 };
 
+// Mutex global para la sincronización
+mutex mx;
+
 // Función para recolectar los archivos de texto
-unordered_map<string, string> recolectarArchivos(vector<string> &nombresArchivos) {
-    unordered_map<string, string> archivosRecolectados; // mapa de archivos recolectados (nombre archivo - contenido)
-    for (string& nombre : nombresArchivos) {  // para cada archivo
-        ifstream archivoEntrada(nombre); // lo lee (modo lectura ifstream)
-        if (archivoEntrada) { // si se pudo abrir
-            stringstream texto; // se crea un stream para el texto
-            texto << archivoEntrada.rdbuf(); // se almacena el contenido en 'texto'
-            archivosRecolectados[nombre] = texto.str(); // el texto se almacena en el nombre del archivo en 'archivosRecolectados'
-        } else { // no se pudo abrir
-            cerr << "Error al abrir el archivo: " << nombre << endl; // imprime mensaje error
+unordered_map<string, string> recolectarArchivos(const vector<string>& nombresArchivos) {
+    unordered_map<string, string> archivosRecolectados;
+    for (const string& nombre : nombresArchivos) {
+        ifstream archivoEntrada(nombre);
+        if (archivoEntrada) {
+            stringstream texto;
+            texto << archivoEntrada.rdbuf();
+            archivosRecolectados[nombre] = texto.str();
+        } else {
+            cerr << "Error al abrir el archivo: " << nombre << endl;
         }
     }
-    return archivosRecolectados; // retorna los archivos recolectados
+    return archivosRecolectados;
 }
 
 // Función para eliminar signos de puntuación y saltos de linea
-string eliminarSignos(string& texto) {
-    string nuevoTexto; // almacena el nuevo texto
-    for (char caracter : texto) { // para cada caracter en el texto
-        if (isalnum(caracter) || caracter == ' ') { // si es alfanumerico o espacio en blanco
-            nuevoTexto += caracter; // lo añade a nuevoTexto
-        } else if (caracter == '\n') { // si es salto de linea
-            nuevoTexto += " "; // añade un espacio
+string eliminarSignos(const string& texto) {
+    string nuevoTexto;
+    for (char caracter : texto) {
+        if (isalnum(caracter) || caracter == ' ') {
+            nuevoTexto += caracter;
+        } else if (caracter == '\n') {
+            nuevoTexto += ' ';
         }
     }
-    return nuevoTexto; // retorna el nuevo texto
+    return nuevoTexto;
 }
 
-// Función para tokenizar un texto (separa palabra por palabra)
-vector<string> tokenizarTexto(string& texto) {
-    vector<string> listaPalabras; // lista de palabras
-    
-    // istringstream sirve para tratar un string como si fuera un stream de entrada
-    istringstream stream(texto); // se crea un stream para el texto
-    string palabra; // almacena una palabra
-
-    // Se extraen palabra por palabra del stream y se almacenan en la lista
-    while (stream >> palabra) { // mientras se pueda extraer una palabra
-        listaPalabras.push_back(palabra);  // esa palabra se almacena en la lista
+// Función para tokenizar un texto
+vector<string> tokenizarTexto(const string& texto) {
+    vector<string> listaPalabras;
+    istringstream stream(texto);
+    string palabra;
+    while (stream >> palabra) {
+        listaPalabras.push_back(palabra);
     }
-    return listaPalabras; // retorna la lista de palabras (vector)
+    return listaPalabras;
 }
 
-// Función para eliminar palabras que no brindan informacion
-vector<string> eliminarStopWords(vector<string>& listaPalabras, unordered_set<string>& stopWords) {
-    vector<string> palabrasFiltradas; // almacena las palabras filtradas
-    for (string& palabra : listaPalabras) { // para cada palabra en nuestra lista de palabras
-        // Se verifica si la palabra no está en el conjunto de palabras vacías
-        if (stopWords.find(palabra) == stopWords.end()) { // si esa palabra no esta en los StopWords
-            palabrasFiltradas.push_back(palabra); // la palabra se almacena en palabrasFiltradass
+
+// Función para eliminar palabras que no brindan información
+vector<string> eliminarStopWords(const vector<string>& listaPalabras, const unordered_set<string>& stopWords) {
+    vector<string> palabrasFiltradas;
+    for (const string& palabra : listaPalabras) {
+        if (stopWords.find(palabra) == stopWords.end()) {
+            palabrasFiltradas.push_back(palabra);
         }
     }
-    return palabrasFiltradas; // retorna las palabras filtradas
+    return palabrasFiltradas;
 }
 
 // Estructura auxiliar para almacenar la palabra y el nombre del archivo
-struct PalabraArchivo { 
+struct PalabraArchivo {
     string palabra;
     string nombreArchivo;
 };
 
 // Función para mapear los archivos procesados
-vector<PalabraArchivo> mapearArchivos(unordered_map<string, vector<string>>& archivosProcesados) {
-    PalabraArchivo pa; // usamos la estructura 'PalabraArchivo' para almacenar el nombre de archivo y la palabra
-    vector<PalabraArchivo> datosMappeados; // vector de palabraArchivo
-    // para cada nombre de archivo y lista de palabras en los archivos procesados
-    for (auto& [nombre, listaPalabras] : archivosProcesados) { 
-        for (string& palabra : listaPalabras) { // para cada palabra en la lista de palabras
-            pa.palabra = palabra; // la palabra se almacena en la palabra de la palabraArchivo
-            pa.nombreArchivo = nombre; // el nombre de archivo se almacena en el nombre de archivo de la palabraArchivo
-            datosMappeados.push_back(pa); // la palabraArchivo se almacena en datosMappeados
+vector<PalabraArchivo> mapearArchivos(const unordered_map<string, vector<string>>& archivosProcesados) {
+    vector<PalabraArchivo> datosMappeados;
+    for (const auto& [nombre, listaPalabras] : archivosProcesados) {
+        for (const string& palabra : listaPalabras) {
+            datosMappeados.push_back({palabra, nombre});
         }
     }
-    return datosMappeados; // retorna los datosMappeados (vector de PalabraArchivo)
+    return datosMappeados;
 }
 
-// Organización de los datos intermedios: Agrupación por clave (palabra, palabra, ...)
-unordered_map<string, vector<string>> shuffle(vector<PalabraArchivo>& datosMapeados) {
-    unordered_map<string, vector<string>> datosAgrupados; // almacena los datos agrupados (palabra - nombre archivo)
-    for (auto& dato : datosMapeados) { // para cada palabraArchivo de nuestro vector de palabraArchivo
-        datosAgrupados[dato.palabra].push_back(dato.nombreArchivo); // la palabra se almacena como clave y el nombre de archivo como valor
-        // esta asignacion evita repeticiones
+// Organización de los datos intermedios
+unordered_map<string, vector<string>> shuffle(const vector<PalabraArchivo>& datosMapeados) {
+    unordered_map<string, vector<string>> datosAgrupados;
+    for (const auto& dato : datosMapeados) {
+        datosAgrupados[dato.palabra].push_back(dato.nombreArchivo);
     }
-    return datosAgrupados; // retorna los datos agrupados
+    return datosAgrupados;
 }
 
 // Reducir combinando listas de nombre de los archivos para cada palabra usando un Trie
-void reducirDatos(unordered_map<string, vector<string>>& datosAgrupados, Trie& trie) {
-    for (auto& [palabra, nombreArchivo] : datosAgrupados) { // para cada palabra y lista de archivos en los datos agrupados
-        for (auto& nom : nombreArchivo) { // para cada nombre de archivo por palabra
-            // insertamos la palabra y los nombres de los archivos a los que pertenece en el Trie
-            trie.insertar(palabra, nom); 
+void reducirDatos(const unordered_map<string, vector<string>>& datosAgrupados, Trie& trie) {
+    lock_guard<mutex> lock(mx); // Bloqueo del mutex global
+    for (const auto& [palabra, nombresArchivos] : datosAgrupados) {
+        for (const auto& nombreArchivo : nombresArchivos) {
+            trie.insertar(palabra, nombreArchivo);
         }
     }
 }
 
-unordered_set<string> procesarEntrada(Trie& trie ,string& entrada){ // procesa la entrada
-    istringstream stream(entrada); // se crea un stream para la entrada
-    string palabra1; 
-    stream >> palabra1; // se extrae la primer palabra
-    string operador;
-    stream >> operador; // se extrae el operador
-    string palabra2;
-    stream >> palabra2; // se extrae la segunda palabra
+// Procesar entrada
+unordered_set<string> procesarEntrada(const Trie& trie, const string& entrada) {
+    istringstream stream(entrada);
+    string palabra1, operador, palabra2;
+    stream >> palabra1 >> operador >> palabra2;
 
-    if (operador == "AND" || operador == "and") { // si es AND (deben estar si o si las 2 palabras)
-        // hacemos doble busqueda en el trie
-        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1); 
+    if (operador == "AND" || operador == "and") {
+        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
         unordered_set<string> archivosEncontrados2 = trie.buscar(palabra2);
         unordered_set<string> interseccionArchivos;
-        for (const string& nombres : archivosEncontrados1) { // para los nombres encontrados en la primera busqueda
-            // el metodo find devuelve un iterador al elemento si lo encuentra, si no, devuelve un iterador al final ( end() )
-            if (archivosEncontrados2.find(nombres) != archivosEncontrados2.end()) { // si el nombre del archivo esta en la segunda busqueda
-                interseccionArchivos.insert(nombres); // lo inserta en interseccionArchivos
+        for (const string& nombres : archivosEncontrados1) {
+            if (archivosEncontrados2.find(nombres) != archivosEncontrados2.end()) {
+                interseccionArchivos.insert(nombres);
             }
         }
-        return interseccionArchivos; // retorna la interseccionArchivos
-    } else if (operador == "OR" || operador == "or") { // si el operador es OR (debe contener almenos una de las palabras)
-        // hacemos doble busqueda en el trie
-        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1); 
+        return interseccionArchivos;
+    } else if (operador == "OR" || operador == "or") {
+        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1);
         unordered_set<string> archivosEncontrados2 = trie.buscar(palabra2);
-        
-        archivosEncontrados1.merge(archivosEncontrados2); // combina los resultados de ambas busquedas
-        return archivosEncontrados1; // retorna los archivos encontrados
-    } else { // si no hay operador
-        unordered_set<string> archivosEncontrados1 = trie.buscar(palabra1); // busca la primer palabra
-        return archivosEncontrados1; // retorna los archivos encontrados
+        archivosEncontrados1.merge(archivosEncontrados2);
+        return archivosEncontrados1;
+    } else {
+        return trie.buscar(palabra1);
     }
-    
 }
-void crearIndiceInvertido(vector<string> nombresArchivos, Trie trie) {
-    mutex mx ;
+
+// Función para crear índice invertido
+void crearIndiceInvertido(const vector<string>& nombresArchivos, Trie& trie) {
     // Cargamos las StopWords del archivo
-    ifstream archivoEntrada("stop_words_spanish.txt"); // archivo de palabras vacias (no aportan informacion)
+    ifstream archivoEntrada("stop_words_spanish.txt"); // archivo de palabras vacías (no aportan información)
     unordered_set<string> stopWords; // almacena las palabras vacías
     if (archivoEntrada) { // si el archivo de StopWords se pudo abrir
         string palabra; 
         while (getline(archivoEntrada, palabra)) { // para cada palabra en el archivo
             stopWords.insert(palabra); // la palabra se almacena en 'stopWords'
         }
-    } else { // en caos no se pudo abrir
-        cerr << "Error al abrir el archivo de palabras vacias." << endl;// mensaje de error
+    } else { // en caso no se pudo abrir
+        cerr << "Error al abrir el archivo de palabras vacías." << endl; // mensaje de error
     } 
-    // recolectamos los archivos (nombre - contenido)
+
+    // Recolectamos los archivos (nombre - contenido)
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos); 
 
-    unordered_map<string, vector<string>> archivosProcesados; // contendra los archivos procesados
+    unordered_map<string, vector<string>> archivosProcesados; // contendrá los archivos procesados
     for (auto& [nombre, texto] : archivosRecolectados) { // para cada archivo en archivosRecolectados
         texto = eliminarSignos(texto); // elimina los signos en los textos
         vector<string> listaPalabras = tokenizarTexto(texto); // separa las palabras en el texto
@@ -208,52 +192,42 @@ void crearIndiceInvertido(vector<string> nombresArchivos, Trie trie) {
         archivosProcesados[nombre] = palabrasFiltradas; // la palabra filtrada se almacena en archivosProcesados
     }
 
-    // los mapeamos (pasan a estar en estructura PalabraArchivo contiene palabra y nombre del archivo) 
+    // Los mapeamos (pasan a estar en estructura PalabraArchivo contiene palabra y nombre del archivo) 
     vector<PalabraArchivo> datosMapeados = mapearArchivos(archivosProcesados);
 
-    // los ordenamos, pasan a estar de nuevo en clave-valor, ahora sin repeticiones
-    unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados);// 
+    // Los ordenamos, pasan a estar de nuevo en clave-valor, ahora sin repeticiones
+    unordered_map<string, vector<string>> datosAgrupados = shuffle(datosMapeados); 
     
-    // Usamos mutex para controlar la insercion al trie con los hilos
-    lock_guard<mutex> lock(mx);
-    reducirDatos(datosAgrupados, trie); // ingresamos el indice invertido en el trie
-
+    // Usamos mutex para controlar la inserción al trie con los hilos
+    reducirDatos(datosAgrupados, trie); // ingresamos el índice invertido en el trie
 }
 
+// Función principal
 int main() {
-    // Iniciamos el cronómetro para medir tiempo de ejecucion
     auto start = std::chrono::high_resolution_clock::now();
 
-    
-
-    // Nombre de los documentos a procesar
-    vector<vector<string>> nombresArchivos = { // nombres de archivos a procesar
-        {"17 LEYES DEL TRABAJO EN EQUIPO - JOHN C. MAXWELL.txt"},
-        {"21 LEYES DEL LIDERAZGO - JOHN C. MAXWELL.txt"},
-        {"25 MANERAS DE GANARSE A LA GENTE - JOHN C. MAXWELL.txt"},
-        {"ACTITUD DE VENCEDOR - JOHN C. MAXWELL.txt"},
-        {"El Oro Y La Ceniza - Abecassis Eliette.txt"},
-        {"La ultima sirena - Abe ShanaLa.txt"},
-        {"SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt"},
-        {"VIVE TU SUENO - JOHN MAXWELL.txt"}
+    vector<string> nombresArchivos = {
+        "17 LEYES DEL TRABAJO EN EQUIPO - JOHN C. MAXWELL.txt",
+        "21 LEYES DEL LIDERAZGO - JOHN C. MAXWELL.txt",
+        "25 MANERAS DE GANARSE A LA GENTE - JOHN C. MAXWELL.txt",
+        "ACTITUD DE VENCEDOR - JOHN C. MAXWELL.txt",
+        "El Oro Y La Ceniza - Abecassis Eliette.txt",
+        "La ultima sirena - Abe ShanaLa.txt",
+        "SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt",
+        "VIVE TU SUENO - JOHN MAXWELL.txt"
     };
 
-    Trie trie; // creamos el trie
-    thread threads[8]; // usaremos 8 hilos
-    for (int i = 0; i < 8; ++i) { // a cada hilo, le asignamos un archivo a leer
-        threads[i] = thread(crearIndiceInvertido, nombresArchivos[i] , trie);
+    Trie trie;
+    vector<thread> threads;
+    for (const auto& nombreArchivo : nombresArchivos) {
+        threads.emplace_back(crearIndiceInvertido, vector<string>{nombreArchivo}, ref(trie));
     }
 
-    // Esperamos a que todos los hilos terminen
-    for (int i = 0; i < 8; ++i) {
-        if (threads[i].joinable()){
-            threads[i].join(); // unimos los hilos al principal cuando estos terminen
-        } else {
-            cerr << "Error al unir el hilo " << i << endl;
+    for (auto& th : threads) {
+        if (th.joinable()) {
+            th.join();
         }
     }
-
-    
 
     // Detenemos el cronómetro y mostramos el tiempo transcurrido
     auto stop = std::chrono::high_resolution_clock::now();

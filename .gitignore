@@ -1,0 +1,56 @@
+# Archivos de compilación
+*.o
+*.obj
+*.lo
+*.la
+*.al
+*.gch
+*.pch
+*.pdb
+*.ilk
+*.d
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
+*.exe
+
+# Archivos de proyecto generados por qmake
+Makefile
+*.pro.user
+*.pro.user.*
+*.qmake.stash
+*.qmake.cache
+*.moc
+*.qrc
+*.cpp
+*.h
+
+# Archivos de construcción de Qt Creator
+*.qmake.qm
+*.qmake.qrc
+*.moc
+
+# Archivos temporales
+*.tmp
+*.log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de IDE (pueden variar)
+.idea/
+.vscode/
+*.suo
+*.ncb
+*.sdf
+*.opensdf
+*.vs/
+
+# Archivos de compilación de CMake (si se usa en lugar de qmake)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
