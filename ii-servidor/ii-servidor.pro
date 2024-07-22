@@ -22,7 +22,7 @@ FORMS += \
     widget.ui
 
 TRANSLATIONS += \
-    indice-invertido_es_PE.ts
+    ii-servidor_es_PE.ts
 CONFIG += lrelease
 CONFIG += embed_translations
 

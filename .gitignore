@@ -1,56 +1,74 @@
-# Archivos de compilación
+# This file is used to ignore files which are generated
+# ----------------------------------------------------------------------------
+
+*~
+*.autosave
+*.a
+*.core
+*.moc
 *.o
 *.obj
-*.lo
-*.la
-*.al
-*.gch
-*.pch
-*.pdb
-*.ilk
-*.d
-*.lib
-*.a
-*.dll
+*.orig
+*.rej
 *.so
-*.dylib
-*.exe
-
-# Archivos de proyecto generados por qmake
-Makefile
-*.pro.user
-*.pro.user.*
-*.qmake.stash
-*.qmake.cache
-*.moc
-*.qrc
-*.cpp
-*.h
-
-# Archivos de construcción de Qt Creator
-*.qmake.qm
-*.qmake.qrc
-*.moc
-
-# Archivos temporales
-*.tmp
-*.log
-
-# Archivos de sistema
+*.so.*
+*_pch.h.cpp
+*_resource.rc
+*.qm
+.#*
+*.*#
+core
+!core/
+tags
 .DS_Store
+.directory
+*.debug
+Makefile*
+*.prl
+*.app
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
 Thumbs.db
+*.res
+*.rc
+/.qmake.cache
+/.qmake.stash
 
-# Archivos de configuración de IDE (pueden variar)
-.idea/
-.vscode/
+# qtcreator generated files
+*.pro.user*
+CMakeLists.txt.user*
+
+# xemacs temporary files
+*.flc
+
+# Vim temporary files
+.*.swp
+
+# Visual Studio generated files
+*.ib_pdb_index
+*.idb
+*.ilk
+*.pdb
+*.sln
 *.suo
+*.vcproj
+*vcproj.*.*.user
 *.ncb
 *.sdf
 *.opensdf
-*.vs/
+*.vcxproj
+*vcxproj.*
 
-# Archivos de compilación de CMake (si se usa en lugar de qmake)
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
+# MinGW generated files
+*.Debug
+*.Release
+
+# Python byte code
+*.pyc
+
+# Binaries
+# --------
+*.dll
+*.exe
+
