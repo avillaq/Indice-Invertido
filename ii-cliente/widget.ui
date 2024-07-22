@@ -16,70 +16,116 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>330</x>
+     <x>220</x>
      <y>30</y>
-     <width>151</width>
-     <height>20</height>
+     <width>401</width>
+     <height>51</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>18</pointsize>
+     <bold>false</bold>
+    </font>
    </property>
    <property name="text">
     <string>CLIENTE INDICE INVERTIDO</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>80</y>
-     <width>191</width>
+     <x>10</x>
+     <y>120</y>
+     <width>261</width>
      <height>16</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>DIRECCION IP DEL SERVIDOR</string>
+    <string>DIRECCION IP DEL SERVIDOR:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>370</x>
-     <y>130</y>
-     <width>51</width>
+     <x>160</x>
+     <y>170</y>
+     <width>91</width>
      <height>16</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>PUERTO</string>
+    <string>PUERTO:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLineEdit" name="ipservidor">
    <property name="geometry">
     <rect>
-     <x>450</x>
-     <y>80</y>
-     <width>113</width>
-     <height>24</height>
+     <x>260</x>
+     <y>110</y>
+     <width>141</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
    </property>
   </widget>
   <widget class="QLineEdit" name="puerto">
    <property name="geometry">
     <rect>
-     <x>450</x>
-     <y>120</y>
-     <width>113</width>
-     <height>24</height>
+     <x>260</x>
+     <y>160</y>
+     <width>81</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
    </property>
   </widget>
   <widget class="QPushButton" name="conectar">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>190</y>
-     <width>80</width>
-     <height>24</height>
+     <x>210</x>
+     <y>220</y>
+     <width>101</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>CONECTAR</string>
@@ -88,11 +134,17 @@
   <widget class="QPushButton" name="enviarconsulta">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>270</y>
-     <width>111</width>
-     <height>24</height>
+     <x>460</x>
+     <y>310</y>
+     <width>161</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>ENVIAR CONSULTA</string>
@@ -101,11 +153,17 @@
   <widget class="QPushButton" name="limpiar">
    <property name="geometry">
     <rect>
-     <x>530</x>
-     <y>540</y>
-     <width>80</width>
-     <height>24</height>
+     <x>560</x>
+     <y>253</y>
+     <width>101</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>LIMPIAR</string>
@@ -114,31 +172,71 @@
   <widget class="QLineEdit" name="consulta">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>270</y>
-     <width>113</width>
-     <height>24</height>
+     <x>170</x>
+     <y>310</y>
+     <width>261</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
    </property>
   </widget>
   <widget class="QTextBrowser" name="arearespuesta">
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>330</y>
-     <width>256</width>
+     <y>360</y>
+     <width>651</width>
      <height>192</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>12</pointsize>
+    </font>
    </property>
   </widget>
   <widget class="QTextBrowser" name="log">
    <property name="geometry">
     <rect>
-     <x>450</x>
-     <y>330</y>
+     <x>480</x>
+     <y>150</y>
      <width>256</width>
-     <height>192</height>
+     <height>91</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>120</y>
+     <width>261</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>HISTORIAL DE LOG:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
  </widget>
