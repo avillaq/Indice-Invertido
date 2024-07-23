@@ -83,7 +83,9 @@ void Widget::iniciarServidor(quint16 puerto) {
             "El Oro Y La Ceniza - Abecassis Eliette.txt",
             "La ultima sirena - Abe ShanaLa.txt",
             "SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt",
-            "VIVE TU SUENO - JOHN MAXWELL.txt"
+            "VIVE TU SUENO - JOHN MAXWELL.txt",
+            "Frankenstein-mary-shelley.txt",
+            "La Divina Comedia - Dante Alighieri.txt"
         };
 
         // Añadir la ruta "textos/" a cada archivo
