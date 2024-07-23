@@ -88,4 +88,5 @@ doc/
 .idea/
 node_modules/
 .cache/
-venv/
+.env
+Pruebas
