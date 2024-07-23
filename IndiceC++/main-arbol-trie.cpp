@@ -224,7 +224,6 @@ int main() {
         cerr << "Error al abrir el archivo de palabras vacias." << endl;
         return 1;
     }
-    
 
     // Nombre de los documentos a procesar
     vector<vector<string>> nombresArchivos = {
@@ -235,11 +234,13 @@ int main() {
         {"El Oro Y La Ceniza - Abecassis Eliette.txt"},
         {"La ultima sirena - Abe ShanaLa.txt"},
         {"SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt"},
-        {"VIVE TU SUENO - JOHN MAXWELL.txt"}
+        {"VIVE TU SUENO - JOHN MAXWELL.txt"},
+        {"Frankenstein-mary-shelley.txt"},
+        {"La Divina Comedia - Dante Alighieri.txt"}
     };
 
     Trie trie;
-    int numeroThreads = 8;
+    int numeroThreads = 10;
     thread threads[numeroThreads];
     for (int i = 0; i < numeroThreads; ++i) {
         threads[i] = thread(crearIndiceInvertido, nombresArchivos[i] , ref(trie), ref(stopWords));
