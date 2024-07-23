@@ -252,14 +252,10 @@ int main() {
             cerr << "Error al unir el hilo " << i << endl;
         }
     }
-    auto start1 = chrono::high_resolution_clock::now();
-
+    // Insertamos las palabras en el trie
     for (auto& datos : datosTotalesAgrupados) {
         reducirDatos(datos, trie);        
     }
-    // Detenemos el cronómetro y mostramos el tiempo transcurrido
-    auto stop1 = chrono::high_resolution_clock::now();
-    cout << "tiempo insercion = " << chrono::duration_cast<chrono::milliseconds>(stop1 - start1).count() << " ms" << endl;
 
     // Detenemos el cronómetro y mostramos el tiempo transcurrido
     auto stop = chrono::high_resolution_clock::now();
