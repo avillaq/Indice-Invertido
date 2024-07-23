@@ -1,6 +1,4 @@
-# This file is used to ignore files which are generated
-# ----------------------------------------------------------------------------
-
+# General temporary and generated files
 *~
 *.autosave
 *.a
@@ -68,7 +66,26 @@ CMakeLists.txt.user*
 *.pyc
 
 # Binaries
-# --------
 *.dll
 *.exe
 
+# Build directories
+build/
+debug/
+release/
+
+# Generated documentation
+doc/
+
+# Log files
+*.log
+
+# Compiled dynamic libraries
+*.dylib
+
+# System files
+.vscode/
+.idea/
+node_modules/
+.cache/
+venv/

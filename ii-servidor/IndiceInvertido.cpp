@@ -136,6 +136,10 @@ unordered_set<string> procesarEntrada(const Trie& trie, const string& entrada) {
 
 void crearIndiceInvertido(const vector<string>& nombresArchivos, Trie& trie) {
     ifstream archivoEntrada("stop_words_spanish.txt");
+    if (!archivoEntrada) {
+        archivoEntrada.open("textos/stop_words_spanish.txt");
+    }
+
     unordered_set<string> stopWords;
     if (archivoEntrada) {
         string palabra;
