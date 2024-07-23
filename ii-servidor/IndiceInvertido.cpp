@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cctype>
 #include <algorithm>
+#include <QCoreApplication>
+#include <QDir>
 
 using namespace std;
 
@@ -135,19 +137,23 @@ unordered_set<string> procesarEntrada(const Trie& trie, const string& entrada) {
 }
 
 void crearIndiceInvertido(const vector<string>& nombresArchivos, Trie& trie) {
-    ifstream archivoEntrada("stop_words_spanish.txt");
-    if (!archivoEntrada) {
-        archivoEntrada.open("textos/stop_words_spanish.txt");
-    }
+    // Obtener la ruta del directorio del ejecutable
+    QDir dir(QCoreApplication::applicationDirPath());
+    QString stopWordsPath = dir.absoluteFilePath("textos");
+    string nombreArchivo = "stop_words_spanish.txt";
 
-    unordered_set<string> stopWords;
-    if (archivoEntrada) {
-        string palabra;
-        while (getline(archivoEntrada, palabra)) {
+    string direccionCompleta = stopWordsPath.toStdString() + "/" + nombreArchivo;
+
+    std::ifstream archivoEntrada(direccionCompleta);
+
+    std::unordered_set<std::string> stopWords;
+    if (archivoEntrada.is_open()) {
+        std::string palabra;
+        while (std::getline(archivoEntrada, palabra)) {
             stopWords.insert(palabra);
         }
     } else {
-        cerr << "Error al abrir el archivo de palabras vacías." << endl;
+        std::cerr << "Error al abrir el archivo de palabras vacías." << std::endl;
     }
 
     unordered_map<string, string> archivosRecolectados = recolectarArchivos(nombresArchivos);

@@ -134,7 +134,7 @@
   <widget class="QPushButton" name="enviarconsulta">
    <property name="geometry">
     <rect>
-     <x>460</x>
+     <x>560</x>
      <y>320</y>
      <width>161</width>
      <height>31</height>
@@ -172,9 +172,9 @@
   <widget class="QLineEdit" name="consulta">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>80</x>
      <y>320</y>
-     <width>261</width>
+     <width>441</width>
      <height>31</height>
     </rect>
    </property>
