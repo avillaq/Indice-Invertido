@@ -1,4 +1,4 @@
-# ii-cliente y ii-servidor
+# INTERFAZ DE INDICE INVERTIDO CON QTCREATOR
 
 ## Descripción
 
@@ -77,7 +77,7 @@ Este repositorio contiene dos aplicaciones desarrolladas en C++ utilizando Qt: `
 
 ### Uso de la Carpeta `textos`
 
-Esta nota importante se aplica únicamente si decides compilar el código.
+Esta nota importante se aplica únicamente si se decide compilar el código.
 
 Para el correcto funcionamiento del servidor, es necesario que la carpeta `textos`, que contiene los archivos de texto con los que trabaja el servidor, esté ubicada en el mismo directorio que el ejecutable generado por la compilación, tanto en Windows como en Linux. 
 
