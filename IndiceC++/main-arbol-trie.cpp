@@ -240,7 +240,7 @@ int main() {
     };
 
     Trie trie;
-    int numeroThreads = 10;
+    int numeroThreads = nombresArchivos.size();
     thread threads[numeroThreads];
     for (int i = 0; i < numeroThreads; ++i) {
         threads[i] = thread(crearIndiceInvertido, nombresArchivos[i] , ref(trie), ref(stopWords));

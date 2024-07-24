@@ -5,8 +5,6 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include <thread>
-#include <mutex>
 
 using namespace std;
 
@@ -27,8 +25,6 @@ public:
     unordered_set<string> buscar(const string& palabra) const;
 };
 
-// Mutex global para la sincronización
-extern mutex mx;
 
 // Función para recolectar los archivos de texto
 unordered_map<string, string> recolectarArchivos(const vector<string>& nombresArchivos);

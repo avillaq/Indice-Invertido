@@ -2,14 +2,10 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <cctype>
-#include <algorithm>
 #include <QCoreApplication>
 #include <QDir>
 
 using namespace std;
-
-mutex mx;
 
 Trie::Trie() {
     root = new Node();
@@ -103,7 +99,6 @@ unordered_map<string, vector<string>> shuffle(const vector<PalabraArchivo>& dato
 }
 
 void reducirDatos(const unordered_map<string, vector<string>>& datosAgrupados, Trie& trie) {
-    lock_guard<mutex> lock(mx);
     for (const auto& [palabra, nombresArchivos] : datosAgrupados) {
         for (const auto& nombreArchivo : nombresArchivos) {
             trie.insertar(palabra, nombreArchivo);

@@ -4,8 +4,6 @@
 #include <QWidget>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <unordered_set>
-#include <vector>
 #include "IndiceInvertido.h"
 
 QT_BEGIN_NAMESPACE
