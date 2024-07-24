@@ -110,7 +110,7 @@ void Widget::iniciarServidor(quint16 puerto) {
             nombreArchivo = textosPath.toStdString() + "/" + nombreArchivo;
         }
 
-        crearIndiceInvertido(nombresArchivos, trie, unordered_set<string>& stopWords);  // Carga los archivos en el índice invertido
+        crearIndiceInvertido(nombresArchivos, trie, stopWords);  // Carga los archivos en el índice invertido
         ui->log->append("Índice invertido cargado correctamente.");  // Mensaje indicando que el índice invertido se ha cargado
     }
 }
