@@ -75,6 +75,22 @@ void Widget::iniciarServidor(quint16 puerto) {
             return;
         }
 
+        // Cargamos la lista de palabras vacías
+        string nombreStopWord = "stop_words_spanish.txt";
+        string pathStopWords = textosPath.toStdString() + "/"+nombreStopWord;
+        std::ifstream archivoEntrada(pathStopWords);
+        std::unordered_set<std::string> stopWords;
+        if (archivoEntrada.is_open()) {
+            std::string palabra;
+            while (std::getline(archivoEntrada, palabra)) {
+                stopWords.insert(palabra);
+            }
+        } else {
+            QString mensajeError = "El archivo '"+QString::fromStdString(nombreStopWord)+"' no se encuentra en la carpeta 'textos'.";
+            QMessageBox::critical(this, "Error",mensajeError);
+            return;
+        }
+
         // Lista de nombres de archivos a cargar
         std::vector<std::string> nombresArchivos = {
             "17 LEYES DEL TRABAJO EN EQUIPO - JOHN C. MAXWELL.txt",
@@ -94,7 +110,7 @@ void Widget::iniciarServidor(quint16 puerto) {
             nombreArchivo = textosPath.toStdString() + "/" + nombreArchivo;
         }
 
-        crearIndiceInvertido(nombresArchivos, trie);  // Carga los archivos en el índice invertido
+        crearIndiceInvertido(nombresArchivos, trie, unordered_set<string>& stopWords);  // Carga los archivos en el índice invertido
         ui->log->append("Índice invertido cargado correctamente.");  // Mensaje indicando que el índice invertido se ha cargado
     }
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <fstream>
 
 using namespace std;
 
@@ -57,6 +58,6 @@ void reducirDatos(const unordered_map<string, vector<string>>& datosAgrupados, T
 unordered_set<string> procesarEntrada(const Trie& trie, const string& entrada);
 
 // Función para crear índice invertido
-void crearIndiceInvertido(const vector<string>& nombresArchivos, Trie& trie);
+void crearIndiceInvertido(const vector<string>& nombresArchivos, Trie& trie, unordered_set<string>& stopWords);
 
 #endif // INDICEINVERTIDO_H
