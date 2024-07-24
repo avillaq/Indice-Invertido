@@ -18,11 +18,6 @@ Widget::Widget(QWidget *parent)
     QString ip = obtenerDireccionIP();  // Obtiene la IP local
     ui->ip->setText(ip);  // Muestra la IP en el campo correspondiente
     ui->ip->setReadOnly(true);  // Hace el campo de IP solo lectura
-
-    // Conecta los botones con sus respectivas funciones
-    connect(ui->iniciar, &QPushButton::clicked, this, &Widget::on_iniciar_clicked, Qt::UniqueConnection);
-    connect(ui->detener, &QPushButton::clicked, this, &Widget::on_detener_clicked, Qt::UniqueConnection);
-    connect(ui->limpiarlog, &QPushButton::clicked, this, &Widget::on_limpiarlog_clicked, Qt::UniqueConnection);
 }
 
 
@@ -73,6 +68,12 @@ void Widget::iniciarServidor(quint16 puerto) {
         // Obtener la ruta del directorio del ejecutable
         QDir dir(QCoreApplication::applicationDirPath());
         QString textosPath = dir.absoluteFilePath("textos");
+
+        // Verificar si la carpeta "textos" existe
+        if (!QDir(textosPath).exists()) {
+            QMessageBox::critical(this, "Error", "La carpeta 'textos' no existe.");
+            return;
+        }
 
         // Lista de nombres de archivos a cargar
         std::vector<std::string> nombresArchivos = {
