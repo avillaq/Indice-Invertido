@@ -102,7 +102,7 @@ void Widget::iniciarServidor(quint16 puerto) {
             "SEAMOS PERSONAS DE INFLUENCIA - JOHN MAXWELL.txt",
             "VIVE TU SUENO - JOHN MAXWELL.txt",
             "Frankenstein-mary-shelley.txt",
-            "La Divina Comedia - Dante Alighieri.txt"
+            "La Divina Comedia - Dante Alighieri.txt",
             "tom_jones-novelacomica-ingles.txt"
         };
 
