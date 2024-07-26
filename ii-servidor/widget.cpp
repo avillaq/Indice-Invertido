@@ -17,7 +17,7 @@ Widget::Widget(QWidget *parent)
 
     QString ip = obtenerDireccionIP();  // Obtiene la IP local
     ui->ip->setText(ip);  // Muestra la IP en el campo correspondiente
-    ui->ip->setReadOnly(true);  // Hace el campo de IP solo lectura
+//ui->ip->setReadOnly(true);  // Hace el campo de IP solo lectura
 }
 
 
@@ -103,6 +103,7 @@ void Widget::iniciarServidor(quint16 puerto) {
             "VIVE TU SUENO - JOHN MAXWELL.txt",
             "Frankenstein-mary-shelley.txt",
             "La Divina Comedia - Dante Alighieri.txt"
+            "tom_jones-novelacomica-ingles.txt"
         };
 
         // Añadir la ruta "textos/" a cada archivo
