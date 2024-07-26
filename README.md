@@ -107,3 +107,24 @@ Para el correcto funcionamiento del servidor, es necesario que la carpeta `texto
 
 La carpeta `IndiceC++` contiene la primera implementación del índice invertido en consola. Se puede encontrar el código fuente para probar esta funcionalidad básica.
 
+## Conexion entre multiple usuarios
+
+### Instrucciones
+
+    - Verficar si estan conectados en la misma red
+    - La direccion IP y puerto deben ser el mismo
+    
+1. **En Windows**
+    - Verificar IP Servidor dentro de Simbolo de Sistema en Windows con el comando
+        ```bash
+      ipconfig
+        ```
+    - Verificar que la IP sea la misma que IPv4
+
+
+2. **En Linux**
+    - Verificar IP Servidor dentro de Bash en Linux
+        ```bash
+      ifconfig
+        ```
+    - Verificar que la IP sea la misma que IPv4
